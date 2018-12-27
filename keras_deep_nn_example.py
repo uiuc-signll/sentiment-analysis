@@ -25,16 +25,12 @@ nltk.download('wordnet')
 print("loaded")
 
 def clean_review(text):
-    tokenizer = TreebankWordTokenizer()
-    stemmer = WordNetLemmatizer()
     # Strip HTML tags
     text = re.sub('<[^<]+?>', ' ', text)
     # Strip escaped quotes
     text = text.replace('\\"', '')
     # Strip quotes
     text = text.replace('"', '')
-    tokens = tokenizer.tokenize(text)
-    text = " ".join(stemmer.lemmatize(token) for token in tokens)
     return text
 
 data_frame['cleaned_review'] = data_frame['text'].apply(clean_review)
