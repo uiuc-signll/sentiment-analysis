@@ -11,39 +11,6 @@ from nltk.corpus import stopwords
 from sacremoses import MosesTokenizer, MosesDetokenizer
 from allennlp.modules.elmo import Elmo, batch_to_ids
 
-with open('yelp_academic_dataset_review.json') as json_file:
-    data = json_file.readlines()
-    data = list(map(json.loads, data))
-    data = data[0:100000]
-
-data_frame = pd.DataFrame(data)
-nltk.download('wordnet')
-print("loaded")
-
-mt = MosesTokenizer()
-
-def clean_review(text):
-    # Strip HTML tags
-    text = re.sub('<[^<]+?>', ' ', text)
-    # Strip escaped quotes
-    text = text.replace('\\"', '')
-    # Strip quotes
-    text = text.replace('"', '')
-    return text
-
-data_frame['cleaned_review'] = data_frame['text'].apply(clean_review)
-# tokenizes each review
-data_frame['tokenized_review'] = data_frame['cleaned_review'].apply(mt.tokenize)
-data_frame['char_ids'] = data_frame['tokenized_review'].apply(batch_to_ids)
-
-X_train, X_test, y_train, y_test = train_test_split(data_frame['char_ids'], data_frame['stars'], test_size=0.2)
-
-y_train = np.array(y_train)
-y_test = np.array(y_test)
-
-y_train = y_train - 1
-y_test = y_test - 1
-
 #https://raw.githubusercontent.com/pytorch/examples/master/mnist/main.py
 from model import Net
 from torch.utils.data import DataLoader, TensorDataset
@@ -100,6 +67,40 @@ def run_model(trainX, trainY, testX, testY, part):
 
 
 def main():
+    with open('yelp_academic_dataset_review.json') as json_file:
+        data = json_file.readlines()
+        data = list(map(json.loads, data))
+        data = data[0:100000]
+
+    data_frame = pd.DataFrame(data)
+    nltk.download('wordnet')
+    print("loaded")
+
+    mt = MosesTokenizer()
+
+    def clean_review(text):
+        # Strip HTML tags
+        text = re.sub('<[^<]+?>', ' ', text)
+        # Strip escaped quotes
+        text = text.replace('\\"', '')
+        # Strip quotes
+        text = text.replace('"', '')
+        return text
+
+    data_frame['cleaned_review'] = data_frame['text'].apply(clean_review)
+    # tokenizes each review
+    data_frame['tokenized_review'] = data_frame['cleaned_review'].apply(mt.tokenize)
+    data_frame['char_ids'] = data_frame['tokenized_review'].apply(batch_to_ids)
+
+    X_train, X_test, y_train, y_test = train_test_split(data_frame['char_ids'], data_frame['stars'], test_size=0.2)
+
+    y_train = np.array(y_train)
+    y_test = np.array(y_test)
+
+    y_train = y_train - 1
+    y_test = y_test - 1
+    
+    
     X_train, X_test = torch.from_numpy(X_train).float(), torch.from_numpy(X_test).float()
     Y_train, Y_test = torch.from_numpy(Y_train).float(), torch.from_numpy(Y_test).float()
     
