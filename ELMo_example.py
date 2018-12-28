@@ -32,11 +32,6 @@ data_frame = pd.DataFrame(data)
 nltk.download('wordnet')
 print("loaded")
 
-#options_file = "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_options.json"
-#weight_file = "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5"
-#
-#elmo = Elmo(options_file, weight_file, 2, dropout=0)
-
 mt = MosesTokenizer()
 
 def clean_review(text):
@@ -66,7 +61,8 @@ y_test = y_test - 1
 input_text = layers.Input(shape=(1,), dtype=tf.string)
 embedding = ElmoEmbeddingLayer()(input_text)
 dense = layers.Dense(256, activation='relu')(embedding)
-pred = layers.Dense(1, activation='sigmoid')(dense)
+dense2 = layers.Dense(256, activation='relu')(dense)
+pred = layers.Dense(5, activation='sigmoid')(dense2)
 model = Model(inputs=[input_text], outputs=pred)
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 model.summary()
