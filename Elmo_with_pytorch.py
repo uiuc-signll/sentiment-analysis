@@ -100,6 +100,7 @@ def main():
     y_train = y_train - 1
     y_test = y_test - 1
     
+    X_train, X_test = np.float(X_train), np.float(X_test)
     
     X_train, X_test = torch.from_numpy(X_train).float(), torch.from_numpy(X_test).float()
     Y_train, Y_test = torch.from_numpy(Y_train).float(), torch.from_numpy(Y_test).float()
